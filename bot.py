@@ -4,7 +4,7 @@ import re
 import db
 
 with open('./token.txt') as f:
-    TOKEN = f.read()
+    TOKEN = f.read().strip()
 
 _intents = discord.Intents.all()
 BOT = discord.Client(intents=_intents)
