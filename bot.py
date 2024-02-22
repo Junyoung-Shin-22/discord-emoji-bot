@@ -18,7 +18,7 @@ _emoji_url_template = 'https://cdn.discordapp.com/emojis/{emoji_id}.{ext}'
 @BOT.event
 async def on_message(message: discord.Message):
     cond = [ # conditions that the message must satisfy
-        message.guild.id == 284430174089510912, # vodka games or 어비스
+        message.guild.id == 284430174089510912,
     ]
     if not all(cond):
         return
