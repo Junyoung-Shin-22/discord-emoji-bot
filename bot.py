@@ -36,6 +36,33 @@ async def on_message(message: discord.Message):
         await _handle_command_message(message, match)
         return
 
+@BOT.event
+async def on_raw_reaction_add(payload):
+    member = payload.member
+    emoji = payload.emoji
+    channel_id = payload.channel_id
+    message_id = payload.message_id
+    
+    try:
+        channel = await BOT.fetch_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+    except:
+        return
+    
+    if message.author.id != BOT.user.id:
+        return
+    
+    author_name = message.embeds[0].author.name
+    if author_name == member.display_name: # reaction from original author
+        await message.delete()
+    elif message.author == member: # ignore bot-added reaction
+        pass
+    else:
+        try:
+            await message.remove_reaction(emoji, member)
+        except:
+            pass
+
 def _create_embed(**kwargs):
     author = kwargs['author']
     image_url = kwargs['image_url']
@@ -52,6 +79,15 @@ def _create_embed(**kwargs):
 
     return emb
 
+async def _send_embed(message, emb):
+    ref = message.reference
+        
+    await message.delete()
+    new_message = await message.channel.send(embed=emb, reference=ref, mention_author=False)
+
+    emoji = discord.PartialEmoji.from_str('❌')
+    await new_message.add_reaction(emoji)
+
 async def _handle_emoji_message(message, match):
     is_animated = bool(match.group(1))
     emoji_name = match.group(2)
@@ -64,10 +100,7 @@ async def _handle_emoji_message(message, match):
     author = message.author
 
     emb = _create_embed(author=author, image_url=image_url, emoji_name=emoji_name)
-    ref = message.reference
-        
-    await message.delete()
-    await message.channel.send(embed=emb, reference=ref, mention_author=False)
+    await _send_embed(message, emb)
 
 async def _handle_command_message(message, match):
     emoji_name = match.group(1)
@@ -79,7 +112,4 @@ async def _handle_command_message(message, match):
     author = message.author
 
     emb = _create_embed(author=author, image_url=image_url, emoji_name=emoji_name)
-    ref = message.reference
-        
-    await message.delete()
-    await message.channel.send(embed=emb, reference=ref, mention_author=False)
+    await _send_embed(message, emb)
