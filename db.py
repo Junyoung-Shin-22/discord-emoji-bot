@@ -6,7 +6,7 @@ class EmojiModel:
     name: str
     url: str
 
-_CON = sql.connect('./db.db')
+_CON = sql.connect('./data/db.db')
 _CUR = _CON.cursor()
 
 # -------------------- initialize db -------------------- #
