@@ -67,6 +67,8 @@ async def _delete_message_and_send_embed(message, emb):
     new_message = await message.channel.send(embed=emb, reference=ref, mention_author=False)
 
     await new_message.add_reaction(_partial_emojis['x'])
+    await asyncio.sleep(5)
+    await new_message.remove_reaction(_partial_emojis['x'], BOT.user)
 
 async def _handle_emoji_message(message, match):
     _GLOBAL_MATCH_CACHE[message.id] = match
